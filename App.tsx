@@ -11,7 +11,7 @@ import { Menu, X } from 'lucide-react';
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // Start loading true to check drive
+  const [isLoading, setIsLoading] = useState(true);
   const [currentView, setCurrentView] = useState<ViewState>('today');
   
   // Auth Form State
@@ -23,7 +23,6 @@ export default function App() {
   // Initialize App
   useEffect(() => {
     const init = async () => {
-      // 1. Check if Drive Config exists, if so, load GAPI
       await storage.initializeStorage();
       setIsLoading(false);
     };
@@ -36,22 +35,15 @@ export default function App() {
     setError('');
 
     try {
-      // If we are connected to Drive, we might need to sync first to get latest auth info
-      // But we can't sync without being logged in if we follow strict flow.
-      // However, usually auth info is local. 
-      // Let's assume user logs in with LOCAL credentials first, then we sync.
-      
       const config = await storage.getAuthInfo();
       if (username === config.username && password === config.password) {
         setIsAuthenticated(true);
-        // Trigger background sync after login to ensure fresh data
-        storage.syncFromDrive().catch(err => console.error("Background sync error", err));
       } else {
         setError('Invalid credentials');
       }
     } catch (err) {
       console.error(err);
-      setError('Login failed. Please check your connection.');
+      setError('Login failed. Database connection error.');
     } finally {
       setIsLoading(false);
     }
@@ -129,7 +121,7 @@ export default function App() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-black overflow-hidden">
+    <div className="flex h-screen bg-gray-50 dark:bg-black overflow-hidden relative">
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden" onClick={() => setIsMobileMenuOpen(false)} />
@@ -161,7 +153,7 @@ export default function App() {
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col h-full overflow-hidden w-full">
+      <main className="flex-1 flex flex-col h-full overflow-hidden w-full transition-all">
         {/* Mobile Header */}
         <div className="md:hidden flex items-center justify-between p-4 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
           <button onClick={() => setIsMobileMenuOpen(true)}>

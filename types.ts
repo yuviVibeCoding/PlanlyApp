@@ -9,13 +9,20 @@ export interface CalendarEvent {
   id: string;
   title: string;
   description: string;
-  startDate: string; // ISO string
-  endDate: string; // ISO string
+  date: string; // ISO string (YYYY-MM-DD)
   category: EventCategory;
+}
+
+export interface Wishlist {
+  id: string;
+  title: string;
+  description?: string;
+  createdAt: string;
 }
 
 export interface WishlistItem {
   id: string;
+  listId: string; // Link to parent Wishlist
   name: string;
   url: string;
   description: string;
@@ -33,7 +40,8 @@ export const INITIAL_CREDENTIALS = {
 export interface AppDatabase {
   auth: UserConfig;
   events: CalendarEvent[];
-  wishlist: WishlistItem[];
+  wishlists: Wishlist[];
+  wishlistItems: WishlistItem[];
   lastUpdated: string;
 }
 
